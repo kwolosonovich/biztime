@@ -12,10 +12,13 @@ router.get('/companies', async (req, res, next) => {
         const result = db.query(
             `SELECT code, name FROM companies`
         )
-        return res.json({companies: result.rows})
+        return await res.json({companies: result.rows})
     } catch (e) {
         return next(e)
     }
 })
 
+router.get('/companies/:[code]', {
+
+})
 
