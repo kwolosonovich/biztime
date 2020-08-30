@@ -29,7 +29,7 @@ router.get('/companies/:code', async (req, res, next) => {
     }
 })
 
-router.post('/companies/companies', async (req, res, next) => {
+router.post('/companies', async (req, res, next) => {
     let code = req.body.code
     let company = req.body.company
     let description = req.body.description
@@ -40,9 +40,22 @@ router.post('/companies/companies', async (req, res, next) => {
            RETURNING code, name, description`, [code, name, description]
         )
         return res.json({ company: result.code, result.name, result.description });
+    } catch (e) {
+        return next(e)
     }
 })
 
+router.put('/companies/:code', (res, req, next) => {
+    let code = req.param.code
+    try {
+        const result = await db.query(
+            `UPDATE code, name, company FROM companies 
+            WHERE code = $1`, [code]
+        )
+    } catch (e) {
+        return next(e)
+    }
+})
 
 
 
