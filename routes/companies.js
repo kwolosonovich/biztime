@@ -24,6 +24,8 @@ router.get('/companies/:code', async (req, res, next) => {
             WHERE code = $1`, [code]
         )
         return res.json({ company: result.code, result.name, result.description });
+    } catch (e) {
+        return next(e)
     }
 })
 
@@ -43,8 +45,8 @@ router.post('/companies', async (req, res, next) => {
     }
 })
 
-router.put('/companies/:code', (res, req, next) => {
-    let code = req.param.code
+router.put('/companies/:code', async (req, res, next) => {
+    let code = req.params.code
     try {
         const result = await db.query(
             `UPDATE code, name, company FROM companies 
@@ -56,11 +58,11 @@ router.put('/companies/:code', (res, req, next) => {
     }
 })
 
-router.delete("/companies/:code", (req, res, next) => {
-    let code = req.param.code
+router.delete("/companies/:code", async (req, res, next) => {
+    let code = req.params.code
     try { 
         const result = await db.query(
-            `SELECT code FROM companies 
+            `DELETE FROM companies 
             WHERE code = $1`, [code]
         )
         return ({status: 'deleted'})
