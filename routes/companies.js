@@ -1,6 +1,21 @@
 const express = require("express")
-// TODO implement ExpressError
+const ExpressError = require("../expressError");
+const router = express.Router();
 
 const db = require("../db")
 
-//TODO implement router
+let router = new Express.Router()
+
+router.get('/companies', async (req, res, next) => {
+    debugger;
+    try {
+        const result = db.query(
+            `SELECT code, name FROM companies`
+        )
+        return res.json({companies: result.rows})
+    } catch (e) {
+        return next(e)
+    }
+})
+
+

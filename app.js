@@ -7,6 +7,7 @@ const app = express();
 const ExpressError = require("./expressError")
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 /** 404 handler */
