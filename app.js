@@ -17,6 +17,7 @@ app.get('/', async (req, res, next) => {
     `SELECT * FROM companies`)
   return res.json(data.rows)
 })
+
 /** 404 handler */
 
 app.use(function(req, res, next) {
