@@ -21,8 +21,8 @@ router.get('/invoices/:id', async (req, res, next) => {
             `SELECT code, name, description FROM code
             WHERE code = $1`, [code]
         )
-        return res.json({invoice: {result.id, result.amt, result.paid, ressult.add_date, ressult.paid_date, result.company: 
-            {result.resultcode, result.name, result.description}}})
+        // return res.json({invoice: {result.id, result.amt, result.paid, ressult.add_date, ressult.paid_date, result.company: 
+        //     {result.resultcode, result.name, result.description}}})
     } catch (e) {
         return next(e)
     }

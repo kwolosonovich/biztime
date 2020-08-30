@@ -1,75 +1,90 @@
-const express = require("express")
+const express = require("express");
+const router = new express.Router();
+const db = require("../db");
+
 const ExpressError = require("../expressError");
-const router = express.Router();
 
-const db = require("../db")
+router.get("/", async (req, res, next) => {
+  try {
+    const data = await db.query(`SELECT code, name FROM companies`);
+    return res.json({ companies: data.rows });
+  } catch (err) {
+    return next(err);
+  }
+});
 
-router.get('/companies', async (req, res, next) => {
-    debugger;
-    try {
-        const result = db.query(
-            `SELECT code, name FROM companies`
-        )
-        return await res.json({companies: result.rows})
-    } catch (e) {
-        return next(e)
+router.get("/:code", async (req, res, next) => {
+  try {
+    let code = req.params.code;
+
+    const data = await db.query(
+      "SELECT code, name, description FROM companies WHERE code = $1",
+      [code]
+    );
+    if (data.rows.length === 0) {
+      let notFoundError = new Error(`Company not found ${code}`);
+      notFoundError.status = 404;
+      throw notFoundError;
     }
-})
+    return res.json({ company: data.rows[0] });
+  } catch (e) {
+    return next(e);
+  }
+});
 
-router.get('/companies/:code', async (req, res, next) => {
-    let code = req.params.code
-    try {
-        const result = await db.query(
-            `SELECT code, name, description FROM code
-            WHERE code = $1`, [code]
-        )
-        return res.json({ company: result.code, result.name, result.description });
-    } catch (e) {
-        return next(e)
-    }
-})
+router.post("/", async (req, res, next) => {
 
-router.post('/companies', async (req, res, next) => {
-    let code = req.body.code
-    let company = req.body.company
-    let description = req.body.description
-    try {
-        const result = await db.query(
-            `INSERT INTO companies (code, name, description) 
+  try {
+    let { name, description } = req.body;
+    let code = name.toLowerCase();
+
+    const result = await db.query(
+      `INSERT INTO companies (code, name, description) 
            VALUES ($1, $2, $3) 
-           RETURNING code, name, description`, [code, name, description]
-        )
-        return res.json({ company: result.code, result.name, result.description });
-    } catch (e) {
-        return next(e)
+           RETURNING code, name, description`,
+      [code, name, description]
+    );
+    return res.json({ company: result.rows[0] });
+  } catch (e) {
+    return next(e);
+  }
+});
+
+router.put("/:code", async (req, res, next) => {
+  try {
+    let code = req.params.code;
+    let { name, description } = req.body;
+
+    const result = await db.query(
+      `UPDATE companies
+            SET name=$1, description=$2
+            WHERE code = $3
+            RETURNING code, name, description`,
+      [name, description, code]
+    );
+    if (result.rows.length === 0) {
+      throw new ExpressError(`Company not found: ${code}`, 404);
+    } else {
+      return res.json({ company: result.rows[0] });
     }
-})
+  } catch (err) {
+    return next(err);
+  }
+});
 
-router.put('/companies/:code', async (req, res, next) => {
-    let code = req.params.code
-    try {
-        const result = await db.query(
-            `UPDATE code, name, company FROM companies 
-            WHERE code = $1`, [code]
-        )
-        return res.json({ company: result.code, result.name, result.description });
-    } catch (e) {
-        return next(e)
-    }
-})
+router.delete("/:code", async (req, res, next) => {
+  let code = req.params.code;
+  try {
+    const result = await db.query(
+      `DELETE FROM companies 
+            WHERE code = $1
+            RETURNING code`,
+      [code]
+    );
+    return { status: "deleted" };
+  } catch (e) {
+    return next(e);
+  }
+});
 
-router.delete("/companies/:code", async (req, res, next) => {
-    let code = req.params.code
-    try { 
-        const result = await db.query(
-            `DELETE FROM companies 
-            WHERE code = $1`, [code]
-        )
-        return ({status: 'deleted'})
-    } catch (e) {
-        return next(e)
-    }
-})
-
-
-
+module.exports = router;

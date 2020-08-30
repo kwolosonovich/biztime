@@ -1,5 +1,5 @@
 /** Database setup for BizTime. */
-const { Client }= require("pg")
+const { Client } = require("pg")
 const secure_DB_URI = require("./secure")
 
 // let DB_URI = secure_DB_URI;

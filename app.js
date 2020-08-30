@@ -1,23 +1,21 @@
 /** BizTime express application. */
 
-
 const express = require("express");
-
 const app = express();
+const companiesRoutes = require("./routes/companies");
 const ExpressError = require("./expressError")
-const db = require('./db')
-const companiesRoutes = require("./routes/companies")
+// const db = require('./db')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/companies", companiesRoutes);
 
-app.get('/', async (req, res, next) => {
-  console.log('here')
-  const data = await db.query(
-    `SELECT * FROM companies`)
-  return res.json(data.rows)
-})
+// app.get('/', async (req, res, next) => {
+//   console.log('here')
+//   const data = await db.query(
+//     `SELECT * FROM companies`)
+//   return res.json(data.rows)
+// })
 
 /** 404 handler */
 
