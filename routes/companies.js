@@ -4,8 +4,6 @@ const router = express.Router();
 
 const db = require("../db")
 
-let router = new Express.Router()
-
 router.get('/companies', async (req, res, next) => {
     debugger;
     try {
