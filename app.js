@@ -6,10 +6,11 @@ const express = require("express");
 const app = express();
 const ExpressError = require("./expressError")
 const db = require('./db')
+const companiesRoutes = require("./routes/companies")
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use("/companies", companiesRoutes);
 
 app.get('/', async (req, res, next) => {
   console.log('here')
