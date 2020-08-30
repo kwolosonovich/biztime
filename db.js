@@ -1,12 +1,9 @@
 /** Database setup for BizTime. */
-const Client = require("pg")
-let DB_URI; 
+const { Client }= require("pg")
+const secure_DB_URI = require("./secure")
 
-if (progesss.env.NODE_ENV === "test") {
-    DB_URI = "postgresql:///biztime_test"
-} else {
-    DB_URI = "postgresql:///biztime"
-}
+let DB_URI = secure_DB_URI;
+
 
 let db = new Client({
   connectionString: DB_URI,

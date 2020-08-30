@@ -5,11 +5,18 @@ const express = require("express");
 
 const app = express();
 const ExpressError = require("./expressError")
+const db = require('./db')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
+app.get('/', async (req, res, next) => {
+  console.log('here')
+  const data = await db.query(
+    `SELECT * FROM companies`)
+  return res.json(data.rows)
+})
 /** 404 handler */
 
 app.use(function(req, res, next) {
