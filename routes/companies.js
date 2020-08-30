@@ -52,11 +52,24 @@ router.put('/companies/:code', (res, req, next) => {
             `UPDATE code, name, company FROM companies 
             WHERE code = $1`, [code]
         )
+        return res.json({ company: result.code, result.name, result.description });
     } catch (e) {
         return next(e)
     }
 })
 
+router.delete("/companies/:code", (req, res, next) => {
+    let code = req.param.code
+    try { 
+        const result = await db.query(
+            `SELECT code FROM companies 
+            WHERE code = $1`, [code]
+        )
+        return ({status: 'deleted'})
+    } catch (e) {
+        return next(e)
+    }
+})
 
 
 
