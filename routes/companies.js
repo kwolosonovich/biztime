@@ -18,7 +18,16 @@ router.get('/companies', async (req, res, next) => {
     }
 })
 
-router.get('/companies/:[code]', {
-
+router.get('/companies/:code', async (req, res, next) => {
+    let code = req.params.code
+    try {
+        const result = db.query(
+            `SELECT code, name, description FROM code
+            WHERE code = $1`, [code]
+        )
+        return await res.json({ company: result.code, result.name, result.description });
+    }
 })
+
+
 
