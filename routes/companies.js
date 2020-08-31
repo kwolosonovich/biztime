@@ -81,7 +81,7 @@ router.delete("/:code", async (req, res, next) => {
             RETURNING code`,
       [code]
     );
-    return { status: "deleted" };
+    return res.json({ status: "deleted" });
   } catch (e) {
     return next(e);
   }
