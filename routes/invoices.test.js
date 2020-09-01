@@ -20,8 +20,8 @@ beforeEach(async function () {
   testCompany = companyResult.rows[0];
 
     let invoiceResult = await db.query(
-      `INSERT INTO invoices (comp_code, amt, paid, add_date)
-      VALUES ('testApple', '300', 'f', '2020-08-31')
+      `INSERT INTO invoices (id, comp_code, amt, paid, add_date)
+      VALUES ('100', 'testApple', '300', 'f', '2020-08-31')
       RETURNING id, comp_code, amt, paid, add_date`
     );
     testInvoice = invoiceResult.rows[0];
@@ -30,6 +30,7 @@ beforeEach(async function () {
 afterEach(async function () {
   // delete any data created by test
   await db.query("DELETE FROM invoices");
+  await db.query("DELETE FROM companies");
 });
 
 afterAll(async function () {
@@ -44,11 +45,24 @@ describe("GET /invoices", () => {
   });
 });
 
-// describe("GET /invoices/id", () => {
-//   test("Get invoice by id", async () => {
-//     const res = await request(app).get(`/invoices/${testInvoice}`);
-//     console.log(res);
-//     expect(res.statusCode).toEqual(200)
-//   })
-// })
+describe("GET /invoices/id", () => {
+  test("Get invoice by id", async () => {
+    const res = await request(app).get(`/invoices/${testInvoice.id}`);
+    expect(res.statusCode).toEqual(200)
+  })
+})
+
+describe("POST /invoices", () => {
+  test("Add an invoice", async () => {
+    const res = await request(app).post(`/invoices`).send({
+      id: "200",
+      comp_code: "testApple",
+      amt: "400",
+      paid: "t",
+      add_date: "2020-09-01",
+      paid_date: "2020-09-02",
+    });
+    expect(res.statusCode).toEqual(200);  
+  });
+});
 
