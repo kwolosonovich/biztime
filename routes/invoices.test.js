@@ -12,6 +12,7 @@ let testInvoice;
 let testComapny;
 
 beforeEach(async function () {
+  await db.query("SELECT setval('invoices_id_seq', 1, false)");
   let companyResult = await db.query(
       `INSERT INTO companies (code, name, description)
       VALUES ('testApple', 'testAppleCo', 'Maker of OSX.')
@@ -31,6 +32,7 @@ afterEach(async function () {
   // delete any data created by test
   await db.query("DELETE FROM invoices");
   await db.query("DELETE FROM companies");
+
 });
 
 afterAll(async function () {
