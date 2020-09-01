@@ -12,19 +12,19 @@ let testInvoice;
 let testComapny;
 
 beforeEach(async function () {
-  let invoiceResult = await db.query(
-    `INSERT INTO invoices (comp_code, amt, paid, add_date)
-        VALUES ('testApple', '300', 'f', '2020-08-31')
-        RETURNING comp_code, amt, paid, add_date`
-  );
-    testInvoice = invoiceResult.rows[0];
+  let companyResult = await db.query(
+      `INSERT INTO companies (code, name, description)
+      VALUES ('testApple', 'testAppleCo', 'Maker of OSX.')
+      RETURNING code, name, description`
+      );
+  testCompany = companyResult.rows[0];
 
-    let companyResult = await db.query(
-        `INSERT INTO companies (code, name, description)
-        VALUES ('testApple', 'testApple', 'Maker of OSX.')
-        RETURNING code, name, description`
-        );
-    testCompany = companyResult.rows[0];
+    let invoiceResult = await db.query(
+      `INSERT INTO invoices (comp_code, amt, paid, add_date)
+      VALUES ('testApple', '300', 'f', '2020-08-31')
+      RETURNING id, comp_code, amt, paid, add_date`
+    );
+    testInvoice = invoiceResult.rows[0];
 });
 
 afterEach(async function () {
@@ -43,3 +43,12 @@ describe("GET /invoices", () => {
     expect(res.statusCode).toEqual(200);
   });
 });
+
+// describe("GET /invoices/id", () => {
+//   test("Get invoice by id", async () => {
+//     const res = await request(app).get(`/invoices/${testInvoice}`);
+//     console.log(res);
+//     expect(res.statusCode).toEqual(200)
+//   })
+// })
+
