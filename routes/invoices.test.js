@@ -11,7 +11,7 @@ const db = require("../db");
 let testCompany;
 
 beforeEach(async function () {
-  let results = await db.query(
+  let result = await db.query(
     `INSERT INTO invoices (comp_code, amt)
         VALUES ('apple', '300')
         RETURNING id, comp_code, amt`
