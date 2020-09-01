@@ -1,7 +1,9 @@
 \c biztime
 
-DROP TABLE IF EXISTS invoices;
 DROP TABLE IF EXISTS companies;
+DROP TABLE IF EXISTS invoices;
+DROP TABLE IF EXISTS industries;
+DROP TABLE IF EXISTS company_industry;
 
 CREATE TABLE companies (
     code text PRIMARY KEY,
@@ -19,9 +21,15 @@ CREATE TABLE invoices (
     CONSTRAINT invoices_amt_check CHECK ((amt > (0)::double precision))
 );
 
--- CREATE TABLE industries (
-  
--- )
+CREATE TABLE industries ( 
+  ind_code text PRIMARY KEY ON DELETE CASCADE,
+  industry text NOT NULL UNIQUE
+);
+
+CREATE TABLE company_industry (
+    comp_code text NOT NULL REFERENCES companies ON DELETE CASCADE,
+    ind_codetext text NOT NULL REFERENCES industries ON DELETE CASCADE
+);
 
 INSERT INTO companies
   VALUES ('apple', 'Apple Computer', 'Maker of OSX.'),
@@ -33,11 +41,20 @@ INSERT INTO invoices (comp_Code, amt, paid, paid_date)
          ('apple', 300, true, '2018-01-01'),
          ('ibm', 400, false, null);
 
+INSERT INTO industries 
+    VALUES ('tech', 'technology');
+
+INSERT INTO company_industry 
+    VALUES ('appe', 'tech');
+
 
 \c biztime_test
 
 DROP TABLE IF EXISTS invoices;
 DROP TABLE IF EXISTS companies;
+DROP TABLE IF EXISTS industries;
+DROP TABLE IF EXISTS company_industry;
+
 
 CREATE TABLE companies (
     code text PRIMARY KEY,
@@ -53,4 +70,15 @@ CREATE TABLE invoices (
     add_date date DEFAULT CURRENT_DATE NOT NULL,
     paid_date date,
     CONSTRAINT invoices_amt_check CHECK ((amt > (0)::double precision))
+);
+
+CREATE TABLE industries ( 
+  ind_code text PRIMARY KEY,
+  industry text NOT NULL UNIQUE
+);
+
+CREATE TABLE company_industry (
+    id serial PRIMARY KEY, 
+    comp_code text NOT NULL REFERENCES companies ON DELETE CASCADE,
+    ind_codetext text NOT NULL REFERENCES industries ON DELETE CASCADE
 );
