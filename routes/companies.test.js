@@ -11,6 +11,7 @@ const db = require("../db");
 let testCompany;
 
 beforeEach (async function() {
+    await db.query("SELECT setval('invoices_id_seq', 1, false)");
     let result = await db.query(
       `INSERT INTO companies (code, name, description)
         VALUES ('apple', 'Apple Computer', 'Maker of OSX.')
@@ -33,6 +34,9 @@ describe("GET /companies", () => {
     test("Get all companies", async () => {
         const res = await request(app).get("/companies")
         expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual({
+          companies: [{ code: "apple", name: "Apple Computer" }],
+        });
     })
 })
 
@@ -40,6 +44,13 @@ describe("GET /companies/code", () => {
   test("Get company by code", async () => {
     const res = await request(app).get("/companies/apple");
     expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual({
+      company: {
+        code: "apple",
+        name: "Apple Computer",
+        description: "Maker of OSX.",
+      },
+    });
   });
 });
 
@@ -64,13 +75,23 @@ describe("put /companies/code", () => {
       description: "updatedDescription",
     });
     expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual(
+    {
+        company: {
+          code: 'apple',
+          name: 'testName',
+          description: 'updatedDescription'
+        }
+      })
   });
 });
 
 describe("delete /companies/code", () => {
   test("Delete a company", async () => {
+
     const res = await request(app).delete(`/companies/${testCompany.code}`);
     expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual({ status: "deleted" });
   });
 });
 

@@ -1,6 +1,7 @@
 // connect to test database
 process.env.NODE_ENV = "test";
 
+const { rest } = require("lodash");
 // npm packages
 const request = require("supertest");
 
@@ -44,6 +45,18 @@ describe("GET /invoices", () => {
   test("Get all invoices", async () => {
     const res = await request(app).get("/invoices");
     expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual({
+      invoices: [
+        {
+          id: 100,
+          comp_code: "testApple",
+          amt: 300,
+          paid: false,
+          add_date: "2020-08-31T07:00:00.000Z",
+          paid_date: null,
+        },
+      ],
+    });
   });
 });
 
@@ -51,6 +64,18 @@ describe("GET /invoices/id", () => {
   test("Get invoice by id", async () => {
     const res = await request(app).get(`/invoices/${testInvoice.id}`);
     expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({
+      invoice: [
+        {
+          id: 100,
+          comp_code: "testApple",
+          amt: 300,
+          paid: false,
+          add_date: "2020-08-31T07:00:00.000Z",
+          paid_date: null,
+        },
+      ],
+    });
   })
 })
 
@@ -65,6 +90,32 @@ describe("POST /invoices", () => {
       paid_date: "2020-09-02",
     });
     expect(res.statusCode).toEqual(200);  
+    expect(res.request._data).toEqual({
+        id: '200',
+        comp_code: 'testApple',
+        amt: '400',
+        paid: 't',
+        add_date: '2020-09-01',
+        paid_date: '2020-09-02'
+      })
+    expect(res.body).toEqual({
+      invoice: {
+        id: 1,
+        comp_code: "testApple",
+        amt: 400,
+        paid: false,
+        add_date: "2020-09-01T07:00:00.000Z",
+        paid_date: null,
+      },
+    });
   });
 });
+
+// describe("DELETE /invoices/id", () => {
+//   test("Delete invoice by id", async () => {
+//     const res = await request(app).delete(`/invoices/${testInvoice.id}`);
+//     console.log(res.body)
+//     expect(res.body).toEqual({ "status": "deleted" });
+//   });
+// })
 
