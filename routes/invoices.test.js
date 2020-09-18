@@ -89,33 +89,24 @@ describe("POST /invoices", () => {
       add_date: "2020-09-01",
       paid_date: "2020-09-02",
     });
-    expect(res.statusCode).toEqual(200);  
-    expect(res.request._data).toEqual({
-        id: '200',
-        comp_code: 'testApple',
-        amt: '400',
-        paid: 't',
-        add_date: '2020-09-01',
-        paid_date: '2020-09-02'
-      })
-    expect(res.body).toEqual({
-      invoice: {
-        id: 1,
-        comp_code: "testApple",
-        amt: 400,
-        paid: false,
-        add_date: "2020-09-01T07:00:00.000Z",
-        paid_date: null,
-      },
-    });
-  });
+    expect(res.statusCode).toBe(200);  
+    expect(JSON.stringify(res.request._data)).toBe(JSON.stringify({   
+      id: "200",
+      comp_code: "testApple",
+      amt: "400",
+      paid: "t",
+      add_date: "2020-09-01",
+      paid_date: "2020-09-02",
+    }));  
+    expect(res.body.invoice.id).toBe(
+      1
+    );
+  })
 });
 
-// describe("DELETE /invoices/id", () => {
-//   test("Delete invoice by id", async () => {
-//     const res = await request(app).delete(`/invoices/${testInvoice.id}`);
-//     console.log(res.body)
-//     expect(res.body).toEqual({ "status": "deleted" });
-//   });
-// })
-
+describe("DELETE /invoices/id", () => {
+  test("Delete invoice by id", async () => {
+    const res = await request(app).delete(`/invoices/${testInvoice.id}`);
+    expect(res.body).toEqual({ "status": "deleted" });
+  });
+})

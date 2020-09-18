@@ -24,15 +24,26 @@ router.get("/:code", async (req, res, next) => {
       "SELECT code, name, description FROM companies WHERE code = $1",
       [code]
     );
+
     if (data.rows.length === 0) {
       let notFoundError = new Error(`Company not found ${code}`);
       notFoundError.status = 404;
       throw notFoundError;
     }
-    return res.json({ company: data.rows[0] });
+
+    const invoices = await db.query(
+      "SELECT comp_code, amt, paid FROM invoices WHERE comp_code = $1",
+      [code]
+    );
+    
+    let company = data.rows[0]
+    company.invoices = [invoices.rows[0]]
+
+    return res.json({ company: company});
   } catch (e) {
     return next(e);
   }
+
 });
 
 router.post("/", async (req, res, next) => {
@@ -77,7 +88,16 @@ router.put("/:code", async (req, res, next) => {
 
 router.delete("/:code", async (req, res, next) => {
   let code = req.params.code;
+
   try {
+    const checkDB = await db.query(
+      `SELECT code FROM companies
+        WHERE code = $1`,
+        [code]
+    )
+    if (checkDB.rows.length === 0) {
+      throw new ExpressError(`Company not found: ${code}`, 404);
+    }  
     const result = await db.query(
       `DELETE FROM companies 
             WHERE code = $1
